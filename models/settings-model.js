@@ -2,12 +2,12 @@ const { Schema, model } = require('mongoose');
 
 const SettingsSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
-    diameter: { type: Number },
-    height: { type: Number },
-    cakeWeightUpToTight: { type: Number },
-    standWeight: { type: Number },
-    leveledCakeWeight: { type: Number },
-    weightOfCoveredCake: { type: Number },
+    diameter: { type: Array },
+    height: { type: Array },
+    cakeWeightUpToTight: { type: Array },
+    standWeight: { type: Array },
+    leveledCakeWeight: { type: Array },
+    weightOfCoveredCake: { type: Array },
 });
 
 module.exports = model('Settings', SettingsSchema);

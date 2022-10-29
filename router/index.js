@@ -17,16 +17,7 @@ router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
 router.get('/users', authMiddleware, userController.getUsers);
 
-router.post(
-    '/settings',
-    authMiddleware,
-    body('diameter').isNumeric(),
-    body('height').isNumeric(),
-    body('cakeWeightUpToTight').isNumeric(),
-    body('standWeight').isNumeric(),
-    body('leveledCakeWeight').isNumeric(),
-    body('weightOfCoveredCake').isNumeric(),
-    settingsController.create
-);
+router.post('/settings', authMiddleware, settingsController.createSettings);
+router.get('/settings/:id', authMiddleware, settingsController.getSettings);
 
 module.exports = router;

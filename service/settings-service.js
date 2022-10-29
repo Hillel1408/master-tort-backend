@@ -1,15 +1,16 @@
 const settingsModel = require('../models/settings-model');
+const SettingsDto = require('../dtos/settings-dto');
 
 class SettingsService {
-    async create(
+    async create({
         userId,
         diameter,
         height,
         cakeWeightUpToTight,
         standWeight,
         leveledCakeWeight,
-        weightOfCoveredCake
-    ) {
+        weightOfCoveredCake,
+    }) {
         const settingsData = await settingsModel.findOne({ user: userId });
         if (settingsData) {
             settingsData.diameter = diameter;
@@ -30,6 +31,11 @@ class SettingsService {
             weightOfCoveredCake,
         });
         return settings;
+    }
+    async get(userId) {
+        const settingsData = await settingsModel.findOne({ user: userId });
+        const settingsDto = new SettingsDto(settingsData);
+        return settingsDto;
     }
 }
 

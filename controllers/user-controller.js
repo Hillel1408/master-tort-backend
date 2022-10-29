@@ -7,9 +7,7 @@ class UserController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(
-                    ApiError.BadRequest('Ошибка при валидации', errors.array())
-                );
+                return next(ApiError.BadRequest('Ошибка при валидации'));
             }
             const { email, password, fullName, city } = req.body;
             const userData = await userService.registration(
