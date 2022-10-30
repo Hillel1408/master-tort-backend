@@ -7,7 +7,7 @@ class UserController {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return next(ApiError.BadRequest('Ошибка при валидации'));
+                return res.status(400).json(errors.array());
             }
             const { email, password, fullName, city } = req.body;
             const userData = await userService.registration(
@@ -35,6 +35,26 @@ class UserController {
                 httpOnly: true,
             });
             return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async resetPassword(req, res, next) {
+        try {
+            const { email } = req.body;
+            const userData = await userService.resetPassword(email);
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async activatePassword(req, res, next) {
+        try {
+            const activationLink = req.params.link;
+            await userService.activatePassword(activationLink);
+            return res.redirect(`${process.env.CLIENT_URL}/login`);
         } catch (e) {
             next(e);
         }

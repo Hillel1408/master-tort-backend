@@ -7,11 +7,16 @@ const authMiddleware = require('../middlewares/auth-middleware');
 
 router.post(
     '/registration',
-    body('email').isEmail(),
-    body('password').isLength({ min: 3, max: 32 }),
+    body('email', 'Неверный формат почты').isEmail(),
+    body('password', 'Пароль должен содержать минимум 5 символов').isLength({
+        min: 5,
+        max: 32,
+    }),
     userController.registration
 );
 router.post('/login', userController.login);
+router.post('/reset-password', userController.resetPassword);
+router.get('/reset-password/:link', userController.activatePassword);
 router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);

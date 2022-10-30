@@ -5,6 +5,7 @@ const mailService = require('./mail-service');
 const tokenService = require('./token-service');
 const UserDto = require('../dtos/user-dto');
 const ApiError = require('../exceptions/api-error');
+const generator = require('generate-password');
 
 class UserService {
     async registration(email, password, fullName, city) {
@@ -26,7 +27,8 @@ class UserService {
         });
         await mailService.sendActivationMail(
             email,
-            `${process.env.API_URL}/api/activate/${activationLink}`
+            `${process.env.API_URL}/api/activate/${activationLink}`,
+            password
         );
 
         const userDto = new UserDto(user); // id, email, isActivated
@@ -59,6 +61,41 @@ class UserService {
 
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
+    }
+
+    async resetPassword(email) {
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            throw ApiError.BadRequest(
+                `Пользователь с почтовым адресом ${email} не существует`
+            );
+        }
+        const activationLink = uuid.v4();
+        const password = generator.generate({
+            length: 10,
+            numbers: true,
+        });
+        const hashPassword = await bcrypt.hash(password, 3);
+        user.activationLinkPassword = activationLink;
+        user.newPassword = hashPassword;
+        await mailService.sendResetPassword(
+            email,
+            `${process.env.API_URL}/api/reset-password/${activationLink}`,
+            password,
+            user.fullName
+        );
+        await user.save();
+        const userDto = new UserDto(user);
+        return userDto;
+    }
+
+    async activatePassword(activationLinkPassword) {
+        const user = await UserModel.findOne({ activationLinkPassword });
+        if (!user) {
+            throw ApiError.BadRequest('Неккоректная ссылка активации');
+        }
+        user.password = user.newPassword;
+        await user.save();
     }
 
     async logout(refreshToken) {
