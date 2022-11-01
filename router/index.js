@@ -1,6 +1,7 @@
 const Router = require('express').Router;
 const userController = require('../controllers/user-controller');
 const settingsController = require('../controllers/settings-controller');
+const recipeController = require('../controllers/recipe-controller');
 const router = new Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -24,5 +25,8 @@ router.get('/users', authMiddleware, userController.getUsers);
 
 router.post('/settings', authMiddleware, settingsController.createSettings);
 router.get('/settings/:id', authMiddleware, settingsController.getSettings);
+
+router.post('/recipe-groups', authMiddleware, recipeController.createGroup);
+router.get('/recipe-groups/:id', authMiddleware, recipeController.getGroups);
 
 module.exports = router;

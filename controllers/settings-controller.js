@@ -1,5 +1,3 @@
-const { validationResult } = require('express-validator');
-const ApiError = require('../exceptions/api-error');
 const settingsService = require('../service/settings-service');
 
 class SettingsController {
