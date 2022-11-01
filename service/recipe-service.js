@@ -6,17 +6,13 @@ class RecipeService {
         if (groupData) {
             const groupData = await groupModel.create({
                 user: data.userId,
-                groupName: data.groupName,
-                groupIcon: data.groupIcon,
-                countRecipe: data.countRecipe,
+                ...data,
             });
             return groupData;
         }
         const group = await groupModel.create({
             user: data.userId,
-            groupName: data.groupName,
-            groupIcon: data.groupIcon,
-            countRecipe: data.countRecipe,
+            ...data,
         });
         return group;
     }
