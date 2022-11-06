@@ -9,10 +9,11 @@ class SettingsController {
             next(e);
         }
     }
+
     async getSettings(req, res, next) {
         try {
-            const userId = req.params.id;
-            const settingsData = await settingsService.get(userId);
+            const user = req.params.id;
+            const settingsData = await settingsService.get(user);
             return res.json(settingsData);
         } catch (e) {
             next(e);

@@ -5,6 +5,18 @@ const recipeController = require('../controllers/recipe-controller');
 const router = new Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (_, __, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (_, file, cb) => {
+        cb(null, file.originalname);
+    },
+});
+
+const upload = multer({ storage });
 
 router.post(
     '/registration',
@@ -15,12 +27,13 @@ router.post(
     }),
     userController.registration
 );
+router.get('/activate/:link', userController.activate);
 router.post('/login', userController.login);
+router.post('/logout', userController.logout);
+router.get('/refresh', userController.refresh);
 router.post('/reset-password', userController.resetPassword);
 router.get('/reset-password/:link', userController.activatePassword);
-router.post('/logout', userController.logout);
-router.get('/activate/:link', userController.activate);
-router.get('/refresh', userController.refresh);
+
 router.get('/users', authMiddleware, userController.getUsers);
 
 router.post('/settings', authMiddleware, settingsController.createSettings);
@@ -28,5 +41,20 @@ router.get('/settings/:id', authMiddleware, settingsController.getSettings);
 
 router.post('/recipe-groups', authMiddleware, recipeController.createGroup);
 router.get('/recipe-groups/:id', authMiddleware, recipeController.getGroups);
+router.delete(
+    '/recipe-groups/:id',
+    authMiddleware,
+    recipeController.removeGroups
+);
+
+router.post('/recipe', authMiddleware, recipeController.createRecipe);
+router.get('/recipe/:id', authMiddleware, recipeController.getRecipe);
+router.delete('/recipe/:id', authMiddleware, recipeController.removeRecipe);
+
+router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
+    res.json({
+        url: `/uploads/${req.file.originalname}`,
+    });
+});
 
 module.exports = router;

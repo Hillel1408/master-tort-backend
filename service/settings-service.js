@@ -2,38 +2,21 @@ const settingsModel = require('../models/settings-model');
 const SettingsDto = require('../dtos/settings-dto');
 
 class SettingsService {
-    async create({
-        userId,
-        diameter,
-        height,
-        cakeWeightUpToTight,
-        standWeight,
-        leveledCakeWeight,
-        weightOfCoveredCake,
-    }) {
-        const settingsData = await settingsModel.findOne({ user: userId });
+    async create(data) {
+        const settingsData = await settingsModel.findOne({ user: data.user });
         if (settingsData) {
-            settingsData.diameter = diameter;
-            settingsData.height = height;
-            settingsData.cakeWeightUpToTight = cakeWeightUpToTight;
-            settingsData.standWeight = standWeight;
-            settingsData.leveledCakeWeight = leveledCakeWeight;
-            settingsData.weightOfCoveredCake = weightOfCoveredCake;
+            Object.keys(data).map((key) => {
+                if (key != 'user') settingsData.key = data.key;
+            });
             return settingsData.save();
         }
         const settings = await settingsModel.create({
-            user: userId,
-            diameter,
-            height,
-            cakeWeightUpToTight,
-            standWeight,
-            leveledCakeWeight,
-            weightOfCoveredCake,
+            ...data,
         });
         return settings;
     }
-    async get(userId) {
-        const settingsData = await settingsModel.findOne({ user: userId });
+    async get(user) {
+        const settingsData = await settingsModel.findOne({ user });
         const settingsDto = new SettingsDto(settingsData);
         return settingsDto;
     }
