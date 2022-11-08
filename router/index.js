@@ -2,6 +2,7 @@ const Router = require('express').Router;
 const userController = require('../controllers/user-controller');
 const settingsController = require('../controllers/settings-controller');
 const recipeController = require('../controllers/recipe-controller');
+const ordersController = require('../controllers/orders-controller');
 const router = new Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -50,6 +51,8 @@ router.delete(
 router.post('/recipe', authMiddleware, recipeController.createRecipe);
 router.get('/recipe/:id', authMiddleware, recipeController.getRecipe);
 router.delete('/recipe/:id', authMiddleware, recipeController.removeRecipe);
+
+router.get('/orders/:id', authMiddleware, ordersController.getOrders);
 
 router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
     res.json({
