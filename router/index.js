@@ -52,7 +52,12 @@ router.post('/recipe', authMiddleware, recipeController.createRecipe);
 router.get('/recipe/:id', authMiddleware, recipeController.getRecipe);
 router.delete('/recipe/:id', authMiddleware, recipeController.removeRecipe);
 
+router.post('/orders', authMiddleware, ordersController.createOrder);
 router.get('/orders/:id', authMiddleware, ordersController.getOrders);
+router.patch('/orders/:id', authMiddleware, ordersController.updateOrders);
+
+router.post('/kanban', authMiddleware, ordersController.createOrdersKanban);
+router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);
 
 router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
     res.json({

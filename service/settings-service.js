@@ -1,12 +1,15 @@
 const settingsModel = require('../models/settings-model');
 const SettingsDto = require('../dtos/settings-dto');
+var ObjectId = require('mongodb').ObjectID;
 
 class SettingsService {
     async create(data) {
-        const settingsData = await settingsModel.findOne({ user: data.user });
+        const settingsData = await settingsModel.findOne({
+            user: ObjectId(data.user),
+        });
         if (settingsData) {
             Object.keys(data).map((key) => {
-                if (key != 'user') settingsData.key = data.key;
+                if (key !== 'user') settingsData[key] = data[key];
             });
             return settingsData.save();
         }
