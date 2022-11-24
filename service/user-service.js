@@ -6,6 +6,7 @@ const tokenService = require('./token-service');
 const UserDto = require('../dtos/user-dto');
 const ApiError = require('../exceptions/api-error');
 const generator = require('generate-password');
+var ObjectId = require('mongodb').ObjectID;
 
 class UserService {
     async registration(email, password, fullName, city) {
@@ -123,6 +124,41 @@ class UserService {
     async getAllUsers() {
         const users = await UserModel.find();
         return users;
+    }
+
+    async update(data) {
+        const user = await UserModel.findOne({ _id: ObjectId(data.userId) });
+        if (data.image) user.avatar = data.image;
+        user.fullName = data.fullName;
+        if (data.email !== user.email) {
+            const candidate = await UserModel.findOne({ email: data.email });
+            if (candidate) {
+                throw ApiError.BadRequest(
+                    `Почтовый адрес ${data.email} принадлежит другому пользователю`
+                );
+            } else {
+                const activationLink = uuid.v4();
+                user.activationLinkEmail = activationLink;
+                user.newEmail = data.email;
+                await mailService.updateEmail(
+                    data.email,
+                    `${process.env.API_URL}/api/update/${activationLink}`,
+                    user.fullName
+                );
+            }
+        }
+        await user.save();
+        const userDto = new UserDto(user);
+        return userDto;
+    }
+
+    async activateEmail(activationLinkEmail) {
+        const user = await UserModel.findOne({ activationLinkEmail });
+        if (!user) {
+            throw ApiError.BadRequest('Неккоректная ссылка активации');
+        }
+        user.email = user.newEmail;
+        await user.save();
     }
 }
 

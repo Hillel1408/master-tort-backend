@@ -3,6 +3,7 @@ const userController = require('../controllers/user-controller');
 const settingsController = require('../controllers/settings-controller');
 const recipeController = require('../controllers/recipe-controller');
 const ordersController = require('../controllers/orders-controller');
+const productsController = require('../controllers/products-controller');
 const router = new Router();
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
@@ -34,6 +35,12 @@ router.post('/logout', userController.logout);
 router.get('/refresh', userController.refresh);
 router.post('/reset-password', userController.resetPassword);
 router.get('/reset-password/:link', userController.activatePassword);
+router.post(
+    '/update',
+    body('email', 'Неверный формат почты').isEmail(),
+    userController.update
+);
+router.get('/update/:link', userController.activateEmail);
 
 router.get('/users', authMiddleware, userController.getUsers);
 
@@ -58,6 +65,9 @@ router.patch('/orders/:id', authMiddleware, ordersController.updateOrders);
 
 router.post('/kanban', authMiddleware, ordersController.createOrdersKanban);
 router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);
+
+router.post('/products', authMiddleware, productsController.createProducts);
+router.get('/products/:id', authMiddleware, productsController.getProducts);
 
 router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
     res.json({

@@ -9,6 +9,9 @@ const UserSchema = new Schema({
     city: { type: String, required: true },
     activationLinkPassword: { type: String },
     newPassword: { type: String },
+    avatar: { type: String },
+    activationLinkEmail: { type: String },
+    newEmail: { type: String },
 });
 
 module.exports = model('User', UserSchema);
