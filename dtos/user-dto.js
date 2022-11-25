@@ -11,5 +11,6 @@ module.exports = class UserDto {
         this.isActivated = model.isActivated;
         this.fullName = model.fullName;
         this.avatar = model.avatar;
+        this.rushOrder = model.rushOrder;
     }
 };

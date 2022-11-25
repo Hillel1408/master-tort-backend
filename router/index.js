@@ -20,6 +20,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
+    res.json({
+        url: `/uploads/${req.file.originalname}`,
+    });
+});
+
 router.post(
     '/registration',
     body('email', 'Неверный формат почты').isEmail(),
@@ -41,6 +47,15 @@ router.post(
     userController.update
 );
 router.get('/update/:link', userController.activateEmail);
+router.post(
+    '/update-password',
+    body('newPassword', 'Пароль должен содержать минимум 5 символов').isLength({
+        min: 5,
+        max: 32,
+    }),
+    userController.updatePassword
+);
+router.post('/update-order', userController.updateOrder);
 
 router.get('/users', authMiddleware, userController.getUsers);
 
@@ -68,11 +83,5 @@ router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);
 
 router.post('/products', authMiddleware, productsController.createProducts);
 router.get('/products/:id', authMiddleware, productsController.getProducts);
-
-router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
-    res.json({
-        url: `/uploads/${req.file.originalname}`,
-    });
-});
 
 module.exports = router;

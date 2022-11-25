@@ -117,11 +117,33 @@ class UserController {
         }
     }
 
+    async updatePassword(req, res, next) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json(errors.array());
+            }
+            const userData = await userService.updatePassword(req.body);
+            return res.json(userData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     async activateEmail(req, res, next) {
         try {
             const activationLink = req.params.link;
             await userService.activateEmail(activationLink);
             return res.redirect(`${process.env.CLIENT_URL}/personal-settings`);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async updateOrder(req, res, next) {
+        try {
+            const userData = await userService.updateOrder(req.body);
+            return res.json(userData);
         } catch (e) {
             next(e);
         }

@@ -160,6 +160,30 @@ class UserService {
         user.email = user.newEmail;
         await user.save();
     }
+
+    async updatePassword(data) {
+        const user = await UserModel.findOne({ _id: ObjectId(data.userId) });
+        const isPassEquals = await bcrypt.compare(data.password, user.password);
+        if (!isPassEquals) {
+            throw ApiError.BadRequest('Неверный пароль');
+        } else {
+            const hashPassword = await bcrypt.hash(data.newPassword, 3);
+            user.password = hashPassword;
+            await user.save();
+            return {
+                success: true,
+            };
+        }
+    }
+
+    async updateOrder(data) {
+        const user = await UserModel.findOne({ _id: ObjectId(data.userId) });
+        user.rushOrder = data.rushOrder;
+        await user.save();
+        return {
+            success: true,
+        };
+    }
 }
 
 module.exports = new UserService();

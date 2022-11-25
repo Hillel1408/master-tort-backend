@@ -12,6 +12,7 @@ const UserSchema = new Schema({
     avatar: { type: String },
     activationLinkEmail: { type: String },
     newEmail: { type: String },
+    rushOrder: { type: Object },
 });
 
 module.exports = model('User', UserSchema);
