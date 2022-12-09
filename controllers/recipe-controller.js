@@ -41,10 +41,20 @@ class RecipeController {
         }
     }
 
-    async getRecipe(req, res, next) {
+    async getRecipes(req, res, next) {
         try {
             const userId = req.params.id;
-            const recipeData = await recipeService.getRecipe(userId);
+            const recipeData = await recipeService.getRecipes(userId);
+            return res.json(recipeData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async getRecipe(req, res, next) {
+        try {
+            const recipeId = req.params.id;
+            const recipeData = await recipeService.getRecipe(recipeId);
             return res.json(recipeData);
         } catch (e) {
             next(e);
@@ -56,6 +66,16 @@ class RecipeController {
             const recipeId = req.params.id;
             const response = await recipeService.removeRecipe(recipeId);
             return res.json(response);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async updateRecipe(req, res, next) {
+        try {
+            const recipeId = req.params.id;
+            const recipeData = await recipeService.update(recipeId, req.body);
+            return res.json(recipeData);
         } catch (e) {
             next(e);
         }

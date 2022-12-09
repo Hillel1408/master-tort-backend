@@ -5,6 +5,7 @@ const RecipeSchema = new Schema({
     group: { type: Schema.Types.ObjectId, ref: 'Recipe-Groups' },
     recipeName: { type: String, required: true },
     recipeUrl: { type: String },
+    products: { type: Array },
 });
 
 module.exports = model('Recipe', RecipeSchema);

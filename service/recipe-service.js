@@ -41,8 +41,15 @@ class RecipeService {
         return recipeData;
     }
 
-    async getRecipe(userId) {
+    async getRecipes(userId) {
         const recipeData = await recipeModel.find({ user: userId });
+        return recipeData;
+    }
+
+    async getRecipe(recipeId) {
+        const recipeData = await recipeModel.findOne({
+            _id: ObjectId(recipeId),
+        });
         return recipeData;
     }
 
@@ -56,6 +63,18 @@ class RecipeService {
         await recipeModel.deleteOne({
             _id: ObjectId(recipId),
         });
+        return {
+            success: true,
+        };
+    }
+
+    async update(id, data) {
+        const recipeData = await recipeModel.findOne({
+            _id: ObjectId(id),
+        });
+        recipeData.products = data.products;
+        if (data.recipeUrl) recipeData.recipeUrl = data.recipeUrl;
+        await recipeData.save();
         return {
             success: true,
         };

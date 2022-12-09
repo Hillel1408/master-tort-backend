@@ -8,6 +8,9 @@ const SettingsSchema = new Schema({
     standWeight: { type: Array },
     leveledCakeWeight: { type: Array },
     weightOfCoveredCake: { type: Array },
+    size: { type: Array },
+    square: { type: Array },
+    amountCream: { type: Array },
 });
 
 module.exports = model('Settings', SettingsSchema);

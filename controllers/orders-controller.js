@@ -11,6 +11,16 @@ class OrdersController {
         }
     }
 
+    async getOrder(req, res, next) {
+        try {
+            const id = req.params.id;
+            const orderData = await ordersService.getOrder(id);
+            return res.json(orderData);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     async getOrdersKanban(req, res, next) {
         try {
             const user = req.params.id;
@@ -31,8 +41,9 @@ class OrdersController {
     }
 
     async createOrder(req, res, next) {
+        const userId = req.params.id;
         try {
-            const ordersData = await ordersService.create(req.body);
+            const ordersData = await ordersService.create(userId, req.body);
             return res.json(ordersData);
         } catch (e) {
             next(e);
