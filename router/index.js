@@ -1,13 +1,14 @@
 const Router = require('express').Router;
+const multer = require('multer');
+const { body } = require('express-validator');
+const authMiddleware = require('../middlewares/auth-middleware');
 const userController = require('../controllers/user-controller');
 const settingsController = require('../controllers/settings-controller');
 const recipeController = require('../controllers/recipe-controller');
 const ordersController = require('../controllers/orders-controller');
 const productsController = require('../controllers/products-controller');
+
 const router = new Router();
-const { body } = require('express-validator');
-const authMiddleware = require('../middlewares/auth-middleware');
-const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination: (_, __, cb) => {
@@ -57,8 +58,6 @@ router.post(
 );
 router.post('/update-order', userController.updateOrder);
 
-router.get('/users', authMiddleware, userController.getUsers);
-
 router.post('/settings', authMiddleware, settingsController.createSettings);
 router.get('/settings/:id', authMiddleware, settingsController.getSettings);
 
@@ -90,5 +89,7 @@ router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);
 
 router.post('/products', authMiddleware, productsController.createProducts);
 router.get('/products/:id', authMiddleware, productsController.getProducts);
+
+router.post('/calculation', authMiddleware, ordersController.calculationOrder);
 
 module.exports = router;

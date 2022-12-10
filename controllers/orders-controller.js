@@ -59,6 +59,15 @@ class OrdersController {
             next(e);
         }
     }
+
+    async calculationOrder(req, res, next) {
+        try {
+            const ordersData = await ordersService.calculation(req.body);
+            return res.json(ordersData);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = new OrdersController();

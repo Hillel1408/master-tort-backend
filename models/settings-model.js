@@ -11,6 +11,7 @@ const SettingsSchema = new Schema({
     size: { type: Array },
     square: { type: Array },
     amountCream: { type: Array },
+    amountMastic: { type: Array },
 });
 
 module.exports = model('Settings', SettingsSchema);

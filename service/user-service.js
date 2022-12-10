@@ -121,11 +121,6 @@ class UserService {
         return { ...tokens, user: userDto };
     }
 
-    async getAllUsers() {
-        const users = await UserModel.find();
-        return users;
-    }
-
     async update(data) {
         const user = await UserModel.findOne({ _id: ObjectId(data.userId) });
         if (data.image) user.avatar = data.image;

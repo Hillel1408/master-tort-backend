@@ -1,37 +1,15 @@
+var ObjectId = require('mongodb').ObjectID;
+const calculationService = require('./calculation-service');
 const settingsModel = require('../models/settings-model');
 const SettingsDto = require('../dtos/settings-dto');
-var ObjectId = require('mongodb').ObjectID;
 
 class SettingsService {
     async create(data) {
+        //создаем настройки пользователя
         const settingsData = await settingsModel.findOne({
             user: ObjectId(data.user),
         });
-
-        const size = (diameter, height) => {
-            const value = 3.14 * ((diameter / 2) * (diameter / 2)) * height;
-            return value;
-        };
-        const square = (diameter, height) => {
-            const value =
-                2 * 3.14 * (diameter / 2) * height +
-                3.14 * ((diameter / 2) * (diameter / 2));
-            return value;
-        };
-        const amountCream = (
-            cakeWeightUpToTight,
-            standWeight,
-            leveledCakeWeight
-        ) => {
-            const value = leveledCakeWeight - standWeight - cakeWeightUpToTight;
-            return value;
-        };
-
-        const amountMastic = (weightOfCoveredCake, leveledCakeWeight) => {
-            const value = weightOfCoveredCake - leveledCakeWeight;
-            return value;
-        };
-
+        //для удобства создаем массивы значений
         const arr = [data.diameter[0], data.height[0]];
         const arr_2 = [data.diameter[1], data.height[1]];
         const arr_3 = [
@@ -44,29 +22,55 @@ class SettingsService {
             data.standWeight[1],
             data.leveledCakeWeight[1],
         ];
-
+        const arr_5 = [data.weightOfCoveredCake[0], data.leveledCakeWeight[0]];
+        //расчитываем общий объем
+        const size = [
+            calculationService.size(...arr),
+            calculationService.size(...arr_2),
+        ];
+        //расчитываем площадь поверхности
+        const square = [
+            calculationService.square(...arr),
+            calculationService.square(...arr_2),
+        ];
+        //расчитываем количество крема
+        const amountCream = [
+            calculationService.amountCream(...arr_3),
+            calculationService.amountCream(...arr_4),
+        ];
+        //если настройки уже существую то перезаписывем их
         if (settingsData) {
             Object.keys(data).map((key) => {
                 if (key !== 'user') settingsData[key] = data[key];
             });
-            settingsData.size = [size(...arr), size(...arr_2)];
-            settingsData.square = [square(...arr), square(...arr_2)];
-            settingsData.amountCream = [
-                amountCream(...arr_3),
-                amountCream(...arr_4),
+            settingsData.size = size;
+            settingsData.square = square;
+            settingsData.amountCream = amountCream;
+            settingsData.amountMastic = [
+                calculationService.amountMastic(...arr_5),
+                '',
             ];
-            return settingsData.save();
+            await settingsData.save();
+            return {
+                success: true,
+            };
         }
+        //если настройки не существуют то создаем их
         const settings = await settingsModel.create({
             ...data,
-            size: [size(...arr), size(...arr_2)],
-            square: [square(...arr), square(...arr_2)],
-            amountCream: [amountCream(...arr_3), amountCream(...arr_4)],
+            size: size,
+            square: square,
+            amountCream: amountCream,
         });
-        return settings;
+        return {
+            success: true,
+        };
     }
+
     async get(user) {
+        //получаем настройки пользователя
         const settingsData = await settingsModel.findOne({ user });
+        //убираем из них всякий мусор
         const settingsDto = new SettingsDto(settingsData);
         return settingsDto;
     }

@@ -6,6 +6,12 @@ const RecipeSchema = new Schema({
     recipeName: { type: String, required: true },
     recipeUrl: { type: String },
     products: { type: Array },
+    checkbox: { type: Boolean },
+    exit: { type: Number },
+    height: { type: Number },
+    diameter: { type: Number },
+    totalVolume: { type: Number },
+    square: { type: Number },
 });
 
 module.exports = model('Recipe', RecipeSchema);
