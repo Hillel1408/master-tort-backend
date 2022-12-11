@@ -80,7 +80,7 @@ router.get('/orders/:id', authMiddleware, ordersController.getOrders);
 router.patch(
     '/update-orders/:id',
     authMiddleware,
-    ordersController.updateOrders
+    ordersController.updateOrder
 );
 router.get('/order/:id', authMiddleware, ordersController.getOrder);
 

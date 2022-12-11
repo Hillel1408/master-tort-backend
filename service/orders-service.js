@@ -129,45 +129,81 @@ class OrdersService {
     }
 
     async calculation(data) {
-        //получаем рецепт
-        const recipeData = await recipeModel.findOne({
-            _id: data.table[0].recipe.value,
-        });
         //получаем настройки пользователя
         const settingsData = await settingsModel.findOne({
             user: ObjectId(data.user),
         });
-        if (data.cakeShape === 'circle') {
-            //объем 1 п. голый
-            let value = null;
-            switch (data.kindCake) {
-                case 'open-cake':
-                    value =
-                        recipeData.totalVolume / (recipeData.exit / data.range);
+        const arr = [];
+        const total = { portion: 0, cream: 0, mastic: 0, totalWeight: 0 };
+        //получаем рецепт
+        for (let i = 0; i < data.table.length; i++) {
+            const recipeData = await recipeModel.findOne({
+                _id: data.table[i].recipe.value,
+            });
+            //если форма торта - круг
+            if (data.cakeShape === 'circle') {
+                let value = null;
+                switch (data.kindCake) {
+                    //объем 1 п. голый
+                    case 'open-cake':
+                        value =
+                            recipeData.totalVolume /
+                            (recipeData.exit / data.range);
+                        break;
+                    //объем 1 п. мастичный
+                    case 'buttercream-cake':
+                        value =
+                            recipeData.totalVolume /
+                            ((recipeData.exit +
+                                (recipeData.square *
+                                    settingsData.amountMastic[0]) /
+                                    settingsData.square[0] +
+                                (recipeData.square *
+                                    settingsData.amountCream[0]) /
+                                    settingsData.square[0]) /
+                                data.range);
+                        break;
+                }
+                //порций в ярусе
+                const portion =
+                    calculationService.size(
+                        data.table[i].diameter,
+                        data.table[i].height
+                    ) / value;
+                //вес яруса в кг.
+                const weight = (portion * data.range) / 1000;
+                //площадь поверхности
+                const square = calculationService.square(
+                    data.table[i].diameter,
+                    data.table[i].height
+                );
+                //крем
+                const cream =
+                    (square * settingsData.amountCream[0]) /
+                    settingsData.square[0];
+                //мастика
+                const mastic =
+                    (square * settingsData.amountMastic[0]) /
+                    settingsData.square[0];
+                //общий вес яруса в кг.
+                const totalWeight = (mastic + cream) / 1000 + weight;
+                //записываем ответ
+                arr.push({
+                    portion: portion,
+                    weight: weight,
+                    cream: cream,
+                    mastic: mastic,
+                    totalWeight: totalWeight,
+                });
+                //расчитываем итог
+                total.portion = total.portion + portion;
+                total.cream = total.cream + cream;
+                total.mastic = total.mastic + mastic;
+                total.totalWeight = total.totalWeight + totalWeight;
             }
-            //порций в ярусе
-            const portion =
-                calculationService.size(
-                    data.table[0].diameter,
-                    data.table[0].height
-                ) / value;
-            //вес яруса в кг.
-            const weight = (portion * data.range) / 1000;
-            //площадь поверхности
-            const square = calculationService.square(
-                data.table[0].diameter,
-                data.table[0].height
-            );
-            //крем
-            const cream =
-                (square * settingsData.amountCream[0]) / settingsData.square[0];
-            //мастика
-            const mastic =
-                (square * settingsData.amountMastic[0]) /
-                settingsData.square[0];
-            //общий вес яруса в кг.
-            const totalWeight = (mastic + cream) / 1000 + weight;
         }
+        arr.push(total);
+        return arr;
     }
 }
 
