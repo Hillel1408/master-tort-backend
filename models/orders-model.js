@@ -16,6 +16,8 @@ const OrdersSchema = new Schema({
     cakeShape: { type: String },
     kindCake: { type: String },
     table: { type: Array },
+    calculation: { type: Array },
+    total: { type: Array },
 });
 
 module.exports = model('Orders', OrdersSchema);

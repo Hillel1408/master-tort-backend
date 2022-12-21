@@ -70,8 +70,9 @@ class OrdersService {
             if (orderData) {
                 //записываем новые значения полей заказа
                 Object.keys(data).map((key) => {
-                    if (key !== '_id' && key !== 'user')
+                    if (key !== '_id' && key !== 'user' && key !== '__v') {
                         orderData[key] = data[key];
+                    }
                 });
                 //получаем канбан доску пользователя
                 const kanbanData = await kanbanModel.findOne({
@@ -134,6 +135,7 @@ class OrdersService {
             user: ObjectId(data.user),
         });
         const arr = [];
+        const calculation = [];
         const total = { portion: 0, cream: 0, mastic: 0, totalWeight: 0 };
         //получаем рецепт
         for (let i = 0; i < data.table.length; i++) {
@@ -163,6 +165,7 @@ class OrdersService {
                                     settingsData.square[0]) /
                                 data.range);
                         break;
+                    //объем 1 п. кремовый
                 }
                 //порций в ярусе
                 const portion =
@@ -200,10 +203,51 @@ class OrdersService {
                 total.cream = total.cream + cream;
                 total.mastic = total.mastic + mastic;
                 total.totalWeight = total.totalWeight + totalWeight;
+                //считаем объем яруса
+                const size = calculationService.size(
+                    data.table[i].diameter,
+                    data.table[i].height
+                );
+                //считаем продукты на ярус
+                const newItems = [];
+                recipeData.products.map((item) => {
+                    const newProducts = [];
+                    item.products.map((product) => {
+                        newProducts.push({
+                            ...product,
+                            net: (product.net * size) / recipeData.totalVolume,
+                        });
+                    });
+                    newItems.push({ ...item, products: newProducts });
+                });
+                calculation.push({
+                    products: newItems,
+                    calculat: arr[i],
+                });
             }
         }
-        arr.push(total);
-        return arr;
+        calculation.push(total);
+        return calculation;
+    }
+
+    async updateTotal(userId, data) {
+        data.forEach(async (item) => {
+            const orderData = await ordersModel.findOne({ _id: item._id });
+            if (orderData) {
+                orderData.total = item.total;
+                await orderData.save();
+            }
+        });
+        //получаем канбан доску пользователя
+        const kanbanData = await kanbanModel.findOne({
+            user: ObjectId(userId),
+        });
+        //обновляем закупку
+        kanbanData.purchase = data;
+        await kanbanData.save();
+        return {
+            success: true,
+        };
     }
 }
 

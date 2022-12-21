@@ -1,5 +1,6 @@
 const Router = require('express').Router;
 const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
 const { body } = require('express-validator');
 const authMiddleware = require('../middlewares/auth-middleware');
 const userController = require('../controllers/user-controller');
@@ -15,7 +16,8 @@ const storage = multer.diskStorage({
         cb(null, 'uploads');
     },
     filename: (_, file, cb) => {
-        cb(null, file.originalname);
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, uuidv4() + '-' + fileName);
     },
 });
 
@@ -23,7 +25,7 @@ const upload = multer({ storage });
 
 router.post('/upload', authMiddleware, upload.single('image'), (req, res) => {
     res.json({
-        url: `/uploads/${req.file.originalname}`,
+        url: `/uploads/${req.file.filename}`,
     });
 });
 
@@ -83,6 +85,7 @@ router.patch(
     ordersController.updateOrder
 );
 router.get('/order/:id', authMiddleware, ordersController.getOrder);
+router.patch('/update-total/:id', authMiddleware, ordersController.updateTotal);
 
 router.post('/kanban', authMiddleware, ordersController.createOrdersKanban);
 router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);

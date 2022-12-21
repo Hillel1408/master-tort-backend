@@ -75,6 +75,16 @@ class OrdersController {
             next(e);
         }
     }
+
+    async updateTotal(req, res, next) {
+        try {
+            const userId = req.params.id;
+            const response = await ordersService.updateTotal(userId, req.body);
+            return res.json(response);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = new OrdersController();
