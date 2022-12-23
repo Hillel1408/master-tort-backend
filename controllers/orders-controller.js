@@ -78,8 +78,20 @@ class OrdersController {
 
     async updateTotal(req, res, next) {
         try {
+            //обновляем закупку
             const userId = req.params.id;
             const response = await ordersService.updateTotal(userId, req.body);
+            return res.json(response);
+        } catch (e) {
+            next(e);
+        }
+    }
+
+    async deleteOrder(req, res, next) {
+        try {
+            //удаляем заказ
+            const orderId = req.params.id;
+            const response = await ordersService.deleteOrder(orderId, req.body);
             return res.json(response);
         } catch (e) {
             next(e);

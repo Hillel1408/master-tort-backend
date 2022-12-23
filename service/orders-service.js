@@ -82,7 +82,8 @@ class OrdersService {
                 Object.keys(kanbanData._doc).map((key) => {
                     if (Array.isArray(kanbanData[key])) {
                         kanbanData[key].map((item, index) => {
-                            if (item._id === data._id) {
+                            if (item._id == data._id) {
+                                console.log(typeof item._id, typeof data._id);
                                 //перезаписываем новое значения канбан доски, с измененным заказом
                                 const newValue = [...kanbanData[key]];
                                 newValue[index] = data;
@@ -127,6 +128,35 @@ class OrdersService {
                 success: true,
             };
         }
+    }
+
+    async deleteOrder(orderId, data) {
+        await ordersModel.updateOne(
+            {
+                _id: ObjectId(orderId),
+            },
+            {
+                status: 'delete',
+            }
+        );
+        const kanbanData = await kanbanModel.findOne({
+            user: ObjectId(data.userId),
+        });
+        Object.keys(kanbanData._doc).map((key) => {
+            if (Array.isArray(kanbanData[key])) {
+                kanbanData[key].map((item, index) => {
+                    if (item._id === orderId) {
+                        const newValue = [...kanbanData[key]];
+                        newValue.splice(index, 1);
+                        kanbanData[key] = newValue;
+                    }
+                });
+            }
+        });
+        await kanbanData.save();
+        return {
+            success: true,
+        };
     }
 
     async calculation(data) {
