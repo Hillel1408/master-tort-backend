@@ -6,6 +6,10 @@ const tokenService = require('./token-service');
 const UserDto = require('../dtos/user-dto');
 const ApiError = require('../exceptions/api-error');
 const generator = require('generate-password');
+const settingsService = require('./settings-service');
+const productsService = require('./products-service');
+const { settingsMastic } = require('../data/settings');
+const { products } = require('../data/settings');
 var ObjectId = require('mongodb').ObjectID;
 
 class UserService {
@@ -25,6 +29,12 @@ class UserService {
             activationLink,
             fullName,
             city,
+            rushOrder: { value: '5', label: '5 дней' },
+        });
+        await settingsService.create({ ...settingsMastic, user: user._id });
+        await productsService.create({
+            userId: user._id,
+            tr: products,
         });
         await mailService.sendActivationMail(
             email,
