@@ -1,4 +1,5 @@
 const UserModel = require('../models/user-model');
+const recipeModel = require('../models/recipe-model');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 const mailService = require('./mail-service');
@@ -8,8 +9,8 @@ const ApiError = require('../exceptions/api-error');
 const generator = require('generate-password');
 const settingsService = require('./settings-service');
 const productsService = require('./products-service');
-const { settingsMastic } = require('../data/settings');
-const { products } = require('../data/settings');
+const recipeService = require('./recipe-service');
+const { settingsMastic, products, groups } = require('../data/settings');
 var ObjectId = require('mongodb').ObjectID;
 
 class UserService {
@@ -35,6 +36,21 @@ class UserService {
         await productsService.create({
             userId: user._id,
             tr: products,
+        });
+        groups.map(async (item) => {
+            const group = await recipeService.createGroup({
+                userId: user._id,
+                groupName: item.groupName,
+                groupIcon: item.groupIcon,
+                countRecipe: item.recipe.length,
+            });
+            item.recipe.map(async (a) => {
+                await recipeModel.create({
+                    user: user._id,
+                    group: group._id,
+                    ...a,
+                });
+            });
         });
         await mailService.sendActivationMail(
             email,

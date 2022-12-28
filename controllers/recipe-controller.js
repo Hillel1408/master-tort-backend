@@ -34,6 +34,7 @@ class RecipeController {
     async createRecipe(req, res, next) {
         try {
             const data = req.body;
+            console.log(data);
             const recipeData = await recipeService.createRecipe(data);
             return res.json(recipeData);
         } catch (e) {

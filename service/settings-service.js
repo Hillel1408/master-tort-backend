@@ -38,6 +38,7 @@ class SettingsService {
             calculationService.amountCream(...arr_3),
             calculationService.amountCream(...arr_4),
         ];
+        const amountMastic = [calculationService.amountMastic(...arr_5), ''];
         //если настройки уже существую то перезаписывем их
         if (settingsData) {
             Object.keys(data).map((key) => {
@@ -46,10 +47,7 @@ class SettingsService {
             settingsData.size = size;
             settingsData.square = square;
             settingsData.amountCream = amountCream;
-            settingsData.amountMastic = [
-                calculationService.amountMastic(...arr_5),
-                '',
-            ];
+            settingsData.amountMastic = amountMastic;
             await settingsData.save();
             return {
                 success: true,
@@ -61,6 +59,7 @@ class SettingsService {
             size: size,
             square: square,
             amountCream: amountCream,
+            amountMastic: amountMastic,
         });
         return {
             success: true,
