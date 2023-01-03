@@ -4,6 +4,7 @@ const ApiError = require('../exceptions/api-error');
 
 class UserController {
     async registration(req, res, next) {
+        //регистрируем пользователя
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -27,6 +28,7 @@ class UserController {
     }
 
     async login(req, res, next) {
+        //логиним пользователя
         try {
             const { email, password } = req.body;
             const userData = await userService.login(email, password);
@@ -41,6 +43,7 @@ class UserController {
     }
 
     async resetPassword(req, res, next) {
+        //сброс и создание нового пароля пользователя
         try {
             const { email } = req.body;
             const userData = await userService.resetPassword(email);
@@ -51,6 +54,7 @@ class UserController {
     }
 
     async activatePassword(req, res, next) {
+        //активация нового пароля по ссылке из письма
         try {
             const activationLink = req.params.link;
             await userService.activatePassword(activationLink);
@@ -61,6 +65,7 @@ class UserController {
     }
 
     async logout(req, res, next) {
+        //логаут пользователя
         try {
             const { refreshToken } = req.cookies;
             const token = await userService.logout(refreshToken);
@@ -72,6 +77,7 @@ class UserController {
     }
 
     async activate(req, res, next) {
+        //активация аккаунта пользователя по ссылке из письма
         try {
             const activationLink = req.params.link;
             await userService.activate(activationLink);
@@ -82,6 +88,7 @@ class UserController {
     }
 
     async refresh(req, res, next) {
+        //аутентификация пользователя
         try {
             const { refreshToken } = req.cookies;
             const userData = await userService.refresh(refreshToken);
@@ -96,6 +103,7 @@ class UserController {
     }
 
     async update(req, res, next) {
+        //обновление личных настроек пользователя
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -109,6 +117,7 @@ class UserController {
     }
 
     async updatePassword(req, res, next) {
+        //обновление пароля пользователя
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -122,6 +131,7 @@ class UserController {
     }
 
     async activateEmail(req, res, next) {
+        //активация нового почтового ящика пользователя по ссылке из письма
         try {
             const activationLink = req.params.link;
             await userService.activateEmail(activationLink);
@@ -132,6 +142,7 @@ class UserController {
     }
 
     async updateOrder(req, res, next) {
+        //обновление срочного заказа пользователя
         try {
             const userData = await userService.updateOrder(req.body);
             return res.json(userData);

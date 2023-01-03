@@ -83,7 +83,6 @@ class OrdersService {
                     if (Array.isArray(kanbanData[key])) {
                         kanbanData[key].map((item, index) => {
                             if (item._id == data._id) {
-                                console.log(typeof item._id, typeof data._id);
                                 //перезаписываем новое значения канбан доски, с измененным заказом
                                 const newValue = [...kanbanData[key]];
                                 newValue[index] = data;
@@ -131,6 +130,7 @@ class OrdersService {
     }
 
     async deleteOrder(orderId, data) {
+        //удаляем заказ пользователя
         await ordersModel.updateOne(
             {
                 _id: ObjectId(orderId),
@@ -159,6 +159,26 @@ class OrdersService {
         };
     }
 
+    async updateTotal(userId, data) {
+        data.forEach(async (item) => {
+            const orderData = await ordersModel.findOne({ _id: item._id });
+            if (orderData) {
+                orderData.total = item.total;
+                await orderData.save();
+            }
+        });
+        //получаем канбан доску пользователя
+        const kanbanData = await kanbanModel.findOne({
+            user: ObjectId(userId),
+        });
+        //обновляем закупку
+        kanbanData.purchase = data;
+        await kanbanData.save();
+        return {
+            success: true,
+        };
+    }
+
     async calculation(data) {
         //получаем настройки пользователя
         const settingsData = await settingsModel.findOne({
@@ -172,6 +192,10 @@ class OrdersService {
             const recipeData = await recipeModel.findOne({
                 _id: data.table[i].recipe.value,
             });
+            const a = recipeData.square;
+            const b = settingsData.square[0];
+            const c = settingsData.amountMastic[0];
+            const d = settingsData.amountCream[0];
             //если форма торта - круг
             if (data.cakeShape === 'circle') {
                 let value = null;
@@ -186,16 +210,15 @@ class OrdersService {
                     case 'buttercream-cake':
                         value =
                             recipeData.totalVolume /
-                            ((recipeData.exit +
-                                (recipeData.square *
-                                    settingsData.amountMastic[0]) /
-                                    settingsData.square[0] +
-                                (recipeData.square *
-                                    settingsData.amountCream[0]) /
-                                    settingsData.square[0]) /
+                            ((recipeData.exit + (a * c) / b + (a * d) / b) /
                                 data.range);
                         break;
                     //объем 1 п. кремовый
+                    case 'cream-cake':
+                        value =
+                            recipeData.totalVolume /
+                            ((recipeData.exit + (a * d) / b) / data.range);
+                        break;
                 }
                 //порций в ярусе
                 const portion =
@@ -211,13 +234,9 @@ class OrdersService {
                     data.table[i].height
                 );
                 //крем
-                const cream =
-                    (square * settingsData.amountCream[0]) /
-                    settingsData.square[0];
+                const cream = (square * d) / b;
                 //мастика
-                const mastic =
-                    (square * settingsData.amountMastic[0]) /
-                    settingsData.square[0];
+                const mastic = (square * c) / b;
                 //общий вес яруса в кг.
                 const totalWeight = (mastic + cream) / 1000 + weight;
                 //записываем ответ
@@ -258,26 +277,6 @@ class OrdersService {
         }
         calculation.push(total);
         return calculation;
-    }
-
-    async updateTotal(userId, data) {
-        data.forEach(async (item) => {
-            const orderData = await ordersModel.findOne({ _id: item._id });
-            if (orderData) {
-                orderData.total = item.total;
-                await orderData.save();
-            }
-        });
-        //получаем канбан доску пользователя
-        const kanbanData = await kanbanModel.findOne({
-            user: ObjectId(userId),
-        });
-        //обновляем закупку
-        kanbanData.purchase = data;
-        await kanbanData.save();
-        return {
-            success: true,
-        };
     }
 }
 
