@@ -5,7 +5,7 @@ class TokenService {
     generateTokens(payload) {
         //генерируем пару токенов
         const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
-            expiresIn: '10m',
+            expiresIn: '60m',
         });
         const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
             expiresIn: '30d',
@@ -17,6 +17,7 @@ class TokenService {
     }
 
     validateAccessToken(token) {
+        //проверяем access токент пользователя на валидность
         try {
             const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
             return userData;
@@ -26,6 +27,7 @@ class TokenService {
     }
 
     validateRefreshToken(token) {
+        //проверяем refresh токен пользователя на валидность
         try {
             const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
             return userData;
@@ -35,6 +37,7 @@ class TokenService {
     }
 
     async saveToken(userId, refreshToken) {
+        //перезаписываем refresh токен пользователя
         const tokenData = await tokenModel.findOne({ user: userId });
         if (tokenData) {
             tokenData.refreshToken = refreshToken;
@@ -45,11 +48,13 @@ class TokenService {
     }
 
     async removeToken(refreshToken) {
+        //удаляем refresh токен пользователя
         const tokenData = await tokenModel.deleteOne({ refreshToken });
         return tokenData;
     }
 
     async findToken(refreshToken) {
+        //получаем refresh токен пользователя
         const tokenData = await tokenModel.findOne({ refreshToken });
         return tokenData;
     }
