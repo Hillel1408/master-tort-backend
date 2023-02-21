@@ -101,8 +101,7 @@ exports.groups = [
                     },
                 ],
                 recipeName: 'Йогуртовый',
-                recipeUrl:
-                    'http://localhost:5000/uploads/2fb342d4-3908-4125-a93b-c64374a080fa-nezhneishi-iogurtovi-tort.jpeg',
+                recipeUrl: `${process.env.API_URL}/uploads/2fb342d4-3908-4125-a93b-c64374a080fa-nezhneishi-iogurtovi-tort.jpeg`,
                 checkbox: true,
                 diameter: 22,
                 exit: 1514,
@@ -330,8 +329,7 @@ exports.groups = [
                     },
                 ],
                 recipeName: 'Опера',
-                recipeUrl:
-                    'http://localhost:5000/uploads/faeae9cd-19fd-419a-9936-94e76d6d037e-tort-opera.jpeg',
+                recipeUrl: `${process.env.API_URL}/uploads/faeae9cd-19fd-419a-9936-94e76d6d037e-tort-opera.jpeg`,
                 checkbox: true,
                 diameter: 18,
                 exit: 1010,
@@ -472,8 +470,7 @@ exports.groups = [
                     },
                 ],
                 recipeName: 'Шоколадный',
-                recipeUrl:
-                    'http://localhost:5000/uploads/6424a42d-1d4c-4f58-8796-e179e315702c-002d5e930aab5f9ba840f374a3e142aa.jpeg',
+                recipeUrl: `${process.env.API_URL}/uploads/6424a42d-1d4c-4f58-8796-e179e315702c-002d5e930aab5f9ba840f374a3e142aa.jpeg`,
                 checkbox: true,
                 diameter: 18,
                 exit: 1126,
@@ -632,8 +629,7 @@ exports.groups = [
                     },
                 ],
                 recipeName: 'Бейлис',
-                recipeUrl:
-                    'http://localhost:5000/uploads/87902835-187c-4752-b77e-2aa073caea08-dsc2016_3895-1000x1000.jpeg',
+                recipeUrl: `${process.env.API_URL}/uploads/87902835-187c-4752-b77e-2aa073caea08-dsc2016_3895-1000x1000.jpeg`,
                 checkbox: true,
                 diameter: 18,
                 exit: 974,
@@ -774,8 +770,7 @@ exports.groups = [
                     },
                 ],
                 recipeName: 'Творожно-вишневый',
-                recipeUrl:
-                    'http://localhost:5000/uploads/4e966648-a3f2-47b7-a6a2-bdfbb5981e27-dom_tort_spb-ð±ð¸ñðºð²ð¸ñð½ñð¸ì-ñð¾ññ-ð²ð¸ñð½ðµð²ñð¸ì-ð¼ð¸ð½ð´ð°ð»ñ-ñ-ñð²ð¾ñð¾ð¶ð½ñð¼-ðºñðµð¼ð¾ð¼.jpeg',
+                recipeUrl: `${process.env.API_URL}/uploads/4e966648-a3f2-47b7-a6a2-bdfbb5981e27-dom_tort_spb.jpeg`,
                 checkbox: true,
                 diameter: 12,
                 exit: 514,
