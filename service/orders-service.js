@@ -179,6 +179,26 @@ class OrdersService {
         };
     }
 
+    async updateTable(userId, data) {
+        data.forEach(async (item) => {
+            const orderData = await ordersModel.findOne({ _id: item._id });
+            if (orderData) {
+                orderData.table = item.table;
+                await orderData.save();
+            }
+        });
+        //получаем канбан доску пользователя
+        const kanbanData = await kanbanModel.findOne({
+            user: ObjectId(userId),
+        });
+        //обновляем закупку
+        kanbanData.inWork = data;
+        await kanbanData.save();
+        return {
+            success: true,
+        };
+    }
+
     async calculation(data) {
         //получаем настройки пользователя
         const settingsData = await settingsModel.findOne({

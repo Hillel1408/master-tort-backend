@@ -87,6 +87,17 @@ class OrdersController {
         }
     }
 
+    async updateTable(req, res, next) {
+        try {
+            //обновляем закупку
+            const userId = req.params.id;
+            const response = await ordersService.updateTable(userId, req.body);
+            return res.json(response);
+        } catch (e) {
+            next(e);
+        }
+    }
+
     async deleteOrder(req, res, next) {
         try {
             //удаляем заказ

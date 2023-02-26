@@ -87,6 +87,7 @@ router.patch(
 router.get('/order/:id', authMiddleware, ordersController.getOrder);
 router.patch('/order/:id', authMiddleware, ordersController.deleteOrder);
 router.patch('/update-total/:id', authMiddleware, ordersController.updateTotal);
+router.patch('/update-table/:id', authMiddleware, ordersController.updateTable);
 
 router.post('/kanban', authMiddleware, ordersController.createOrdersKanban);
 router.get('/kanban/:id', authMiddleware, ordersController.getOrdersKanban);
