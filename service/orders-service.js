@@ -259,14 +259,6 @@ class OrdersService {
                 const mastic = (square * c) / b;
                 //общий вес яруса в кг.
                 const totalWeight = (mastic + cream) / 1000 + weight;
-                //записываем ответ
-                arr.push({
-                    portion: portion,
-                    weight: weight,
-                    cream: cream,
-                    mastic: mastic,
-                    totalWeight: totalWeight,
-                });
                 //расчитываем итог
                 total.portion = total.portion + portion;
                 total.cream = total.cream + cream;
@@ -277,6 +269,15 @@ class OrdersService {
                     data.table[i].diameter,
                     data.table[i].height
                 );
+                //записываем ответ
+                arr.push({
+                    portion: portion,
+                    weight: weight,
+                    cream: cream,
+                    mastic: mastic,
+                    totalWeight: totalWeight,
+                    size: size,
+                });
                 //считаем продукты на ярус
                 const newItems = [];
                 recipeData.products.map((item) => {
