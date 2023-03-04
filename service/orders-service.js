@@ -261,8 +261,6 @@ class OrdersService {
                 const totalWeight = (mastic + cream) / 1000 + weight;
                 //расчитываем итог
                 total.portion = total.portion + portion;
-                total.cream = total.cream + cream;
-                total.mastic = total.mastic + mastic;
                 total.totalWeight = total.totalWeight + totalWeight;
                 //считаем объем яруса
                 const size = calculationService.size(
@@ -270,14 +268,38 @@ class OrdersService {
                     data.table[i].height
                 );
                 //записываем ответ
-                arr.push({
-                    portion: portion,
-                    weight: weight,
-                    cream: cream,
-                    mastic: mastic,
-                    totalWeight: totalWeight,
-                    size: size,
-                });
+                switch (data.kindCake) {
+                    case 'buttercream-cake':
+                        arr.push({
+                            portion: portion,
+                            weight: weight,
+                            cream: cream,
+                            mastic: mastic,
+                            totalWeight: totalWeight,
+                            size: size,
+                        });
+                        total.mastic = total.mastic + mastic;
+                        total.cream = total.cream + cream;
+                        break;
+                    case 'cream-cake':
+                        arr.push({
+                            portion: portion,
+                            weight: weight,
+                            cream: cream,
+                            totalWeight: totalWeight,
+                            size: size,
+                        });
+                        total.cream = total.cream + cream;
+                        break;
+                    case 'open-cake':
+                        arr.push({
+                            portion: portion,
+                            weight: weight,
+                            totalWeight: totalWeight,
+                            size: size,
+                        });
+                        break;
+                }
                 //считаем продукты на ярус
                 const newItems = [];
                 recipeData.products.map((item) => {
