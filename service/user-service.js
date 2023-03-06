@@ -23,7 +23,6 @@ class UserService {
         }
         const hashPassword = await bcrypt.hash(password, 3);
         const activationLink = uuid.v4(); // v34fa-asfasf-142saf-sa-asf
-
         const user = await UserModel.create({
             email,
             password: hashPassword,
@@ -57,11 +56,9 @@ class UserService {
             `${process.env.API_URL}/api/activate/${activationLink}`,
             password
         );
-
         const userDto = new UserDto(user); // id, email, isActivated
         const tokens = tokenService.generateTokens({ ...userDto });
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
-
         return { ...tokens, user: userDto };
     }
 
@@ -85,7 +82,6 @@ class UserService {
         }
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({ ...userDto });
-
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
     }
@@ -142,7 +138,6 @@ class UserService {
         const user = await UserModel.findById(userData.id);
         const userDto = new UserDto(user);
         const tokens = tokenService.generateTokens({ ...userDto });
-
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return { ...tokens, user: userDto };
     }
