@@ -238,58 +238,49 @@ class OrdersService {
                 const mastic = (square * c) / b;
                 //общий вес яруса в кг.
                 let totalWeight;
-                switch (data.kindCake) {
-                    case 'open-cake':
-                        totalWeight = weight;
-                        break;
-                    case 'buttercream-cake':
-                        totalWeight = (mastic + cream) / 1000 + weight;
-                        break;
-                    case 'cream-cake':
-                        totalWeight = cream / 1000 + weight;
-                        break;
-                }
-                //расчитываем итог
-                total.portion = total.portion + portion;
-                total.totalWeight = total.totalWeight + totalWeight;
                 //считаем объем яруса
                 const size = calculationService.size(
                     data.table[i].diameter,
                     data.table[i].height
                 );
                 //записываем ответ
+                const obj = {
+                    portion: portion,
+                    weight: weight,
+                    size: size,
+                };
                 switch (data.kindCake) {
                     case 'open-cake':
+                        totalWeight = weight;
                         arr.push({
-                            portion: portion,
-                            weight: weight,
+                            ...obj,
                             totalWeight: totalWeight,
-                            size: size,
                         });
                         break;
                     case 'buttercream-cake':
+                        totalWeight = (mastic + cream) / 1000 + weight;
                         arr.push({
-                            portion: portion,
-                            weight: weight,
+                            ...obj,
+                            totalWeight: totalWeight,
                             cream: cream,
                             mastic: mastic,
-                            totalWeight: totalWeight,
-                            size: size,
                         });
                         total.mastic = total.mastic + mastic;
                         total.cream = total.cream + cream;
                         break;
                     case 'cream-cake':
+                        totalWeight = cream / 1000 + weight;
                         arr.push({
-                            portion: portion,
-                            weight: weight,
-                            cream: cream,
+                            ...obj,
                             totalWeight: totalWeight,
-                            size: size,
+                            cream: cream,
                         });
                         total.cream = total.cream + cream;
                         break;
                 }
+                //расчитываем итог
+                total.portion = total.portion + portion;
+                total.totalWeight = total.totalWeight + totalWeight;
                 //считаем продукты на ярус
                 const newItems = [];
                 recipeData.products.map((item) => {
