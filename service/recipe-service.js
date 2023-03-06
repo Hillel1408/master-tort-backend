@@ -93,7 +93,7 @@ class RecipeService {
             } else recipeData[key] = data[key];
         });
         //если заказ для расчетов
-        if (data.checkbox && !isCream) {
+        if (data.checkbox) {
             //то высчитываем и записываем общий объем
             recipeData.totalVolume = calculationService.size(
                 data.diameter,
