@@ -18,6 +18,8 @@ const OrdersSchema = new Schema({
     table: { type: Array },
     calculation: { type: Array },
     total: { type: Array },
+    cream: { type: Object },
+    recipeCream: { type: Array },
 });
 
 module.exports = model('Orders', OrdersSchema);

@@ -7,6 +7,7 @@ const RecipeSchema = new Schema({
     recipeUrl: { type: String },
     products: { type: Array },
     checkbox: { type: Boolean },
+    isCream: { type: Boolean },
     exit: { type: Number },
     height: { type: Number },
     diameter: { type: Number },

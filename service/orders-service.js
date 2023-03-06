@@ -212,34 +212,13 @@ class OrdersService {
             const recipeData = await recipeModel.findOne({
                 _id: data.table[i].recipe.value,
             });
-            const a = recipeData.square;
             const b = settingsData.square[0];
             const c = settingsData.amountMastic[0];
             const d = settingsData.amountCream[0];
             //если форма торта - круг
             if (data.cakeShape === 'circle') {
-                let value = null;
-                switch (data.kindCake) {
-                    //объем 1 п. голый
-                    case 'open-cake':
-                        value =
-                            recipeData.totalVolume /
-                            (recipeData.exit / data.range);
-                        break;
-                    //объем 1 п. мастичный
-                    case 'buttercream-cake':
-                        value =
-                            recipeData.totalVolume /
-                            ((recipeData.exit + (a * c) / b + (a * d) / b) /
-                                data.range);
-                        break;
-                    //объем 1 п. кремовый
-                    case 'cream-cake':
-                        value =
-                            recipeData.totalVolume /
-                            ((recipeData.exit + (a * d) / b) / data.range);
-                        break;
-                }
+                let value =
+                    recipeData.totalVolume / (recipeData.exit / data.range);
                 //порций в ярусе
                 const portion =
                     calculationService.size(
@@ -258,7 +237,18 @@ class OrdersService {
                 //мастика
                 const mastic = (square * c) / b;
                 //общий вес яруса в кг.
-                const totalWeight = (mastic + cream) / 1000 + weight;
+                let totalWeight;
+                switch (data.kindCake) {
+                    case 'open-cake':
+                        totalWeight = weight;
+                        break;
+                    case 'buttercream-cake':
+                        totalWeight = (mastic + cream) / 1000 + weight;
+                        break;
+                    case 'cream-cake':
+                        totalWeight = cream / 1000 + weight;
+                        break;
+                }
                 //расчитываем итог
                 total.portion = total.portion + portion;
                 total.totalWeight = total.totalWeight + totalWeight;
@@ -269,6 +259,14 @@ class OrdersService {
                 );
                 //записываем ответ
                 switch (data.kindCake) {
+                    case 'open-cake':
+                        arr.push({
+                            portion: portion,
+                            weight: weight,
+                            totalWeight: totalWeight,
+                            size: size,
+                        });
+                        break;
                     case 'buttercream-cake':
                         arr.push({
                             portion: portion,
@@ -291,14 +289,6 @@ class OrdersService {
                         });
                         total.cream = total.cream + cream;
                         break;
-                    case 'open-cake':
-                        arr.push({
-                            portion: portion,
-                            weight: weight,
-                            totalWeight: totalWeight,
-                            size: size,
-                        });
-                        break;
                 }
                 //считаем продукты на ярус
                 const newItems = [];
@@ -319,7 +309,30 @@ class OrdersService {
             }
         }
         calculation.push(total);
-        return calculation;
+        //cчитаем продукты на крем
+        const recipeCream = [];
+        if (
+            data.kindCake === 'buttercream-cake' ||
+            data.kindCake === 'cream-cake'
+        ) {
+            const recipeData = await recipeModel.findOne({
+                _id: data.cream.value,
+            });
+            recipeData.products.map((item) => {
+                const newProducts = [];
+                item.products.map((product) => {
+                    newProducts.push({
+                        ...product,
+                        net:
+                            (calculation[calculation.length - 1].cream /
+                                recipeData.exit) *
+                            product.net,
+                    });
+                });
+                recipeCream.push({ ...item, products: newProducts });
+            });
+        }
+        return { calculation: calculation, recipeCream: recipeCream };
     }
 }
 
