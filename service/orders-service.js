@@ -236,34 +236,31 @@ class OrdersService {
                 const cream = (square * d) / b;
                 //мастика
                 const mastic = (square * c) / b;
-                //общий вес яруса в кг.
-                let totalWeight;
                 //считаем объем яруса
                 const size = calculationService.size(
                     data.table[i].diameter,
                     data.table[i].height
                 );
                 //записываем ответ
-                const obj = {
-                    portion: portion,
-                    weight: weight,
-                    size: size,
-                };
                 switch (data.kindCake) {
                     case 'open-cake':
                         totalWeight = weight;
                         arr.push({
-                            ...obj,
+                            portion: portion,
+                            weight: weight,
                             totalWeight: totalWeight,
+                            size: size,
                         });
                         break;
                     case 'buttercream-cake':
                         totalWeight = (mastic + cream) / 1000 + weight;
                         arr.push({
-                            ...obj,
-                            totalWeight: totalWeight,
+                            portion: portion,
+                            weight: weight,
                             cream: cream,
                             mastic: mastic,
+                            totalWeight: totalWeight,
+                            size: size,
                         });
                         total.mastic = total.mastic + mastic;
                         total.cream = total.cream + cream;
@@ -271,9 +268,11 @@ class OrdersService {
                     case 'cream-cake':
                         totalWeight = cream / 1000 + weight;
                         arr.push({
-                            ...obj,
-                            totalWeight: totalWeight,
+                            portion: portion,
+                            weight: weight,
                             cream: cream,
+                            totalWeight: totalWeight,
+                            size: size,
                         });
                         total.cream = total.cream + cream;
                         break;
