@@ -215,6 +215,8 @@ class OrdersService {
             const b = settingsData.square[0];
             const c = settingsData.amountMastic[0];
             const d = settingsData.amountCream[0];
+            const a = settingsData.square[1];
+            const e = settingsData.amountCream[1];
             //если форма торта - круг
             if (data.cakeShape === 'circle') {
                 let value =
@@ -233,7 +235,12 @@ class OrdersService {
                     data.table[i].height
                 );
                 //крем
-                const cream = (square * d) / b;
+                let cream;
+                if (data.kindCake === 'cream-cake') {
+                    cream = (square * e) / a;
+                } else {
+                    cream = (square * d) / b;
+                }
                 //мастика
                 const mastic = (square * c) / b;
                 //общий вес яруса в кг.
