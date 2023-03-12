@@ -1133,7 +1133,7 @@ exports.products = [
             value: 'kg',
             label: 'кг.',
         },
-        package: '180',
+        package: '0.18',
         price: '50.00',
         id: 'c52de6d9-d910-9011-7796-ce68bd238083',
     },
